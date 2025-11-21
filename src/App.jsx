@@ -1110,7 +1110,7 @@ export default function App() {
             <p className="text-[10px] md:text-sm uppercase tracking-[0.3em] md:tracking-[0.4em] mb-4 md:mb-6 font-medium">Est. 1998 • Lucknow</p>
           </RevealOnScroll>
           <RevealOnScroll delay={200}>
-            <h1 className="font-serif text-4xl md:text-8xl lg:text-9xl mb-6 md:mb-8 leading-none">
+            <h1 className="font-serif text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-6 md:mb-8 leading-none">
               Timeless <br/> <span className="italic text-[#a88b63]">Elegance</span>
             </h1>
           </RevealOnScroll>
