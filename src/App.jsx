@@ -223,6 +223,7 @@ const CurtainLoader = ({ onComplete }) => {
 const Navigation = ({ cartCount, onOpenCart, searchQuery, setSearchQuery, onLogoClick }) => {
   const [scrolled, setScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
 
   useEffect(() => {
@@ -237,88 +238,151 @@ const Navigation = ({ cartCount, onOpenCart, searchQuery, setSearchQuery, onLogo
     }
   }, [isSearchOpen]);
 
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenuOpen]);
+
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-md py-4 border-b border-gray-100' : 'bg-transparent py-8'}`}>
-      <div className="max-w-[1800px] mx-auto px-6 md:px-12 flex justify-between items-center">
-        
-        <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.2em] font-medium text-gray-800">
-          <button onClick={() => document.getElementById('collection').scrollIntoView({behavior: 'smooth'})} className="hover:text-[#a88b63] transition-colors">Collections</button>
-          <button onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth'})} className="hover:text-[#a88b63] transition-colors">Journal</button>
-        </div>
+    <>
+      <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/95 backdrop-blur-md py-3 md:py-4 border-b border-gray-100' : 'bg-transparent py-4 md:py-8'}`}>
+        <div className="max-w-[1800px] mx-auto px-4 md:px-12 flex justify-between items-center">
 
-        <div onClick={onLogoClick} className={`absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center cursor-pointer transition-all duration-500 ${scrolled ? 'scale-90' : 'scale-100'}`}>
-          <h1 className="font-serif text-3xl md:text-4xl font-bold tracking-tight text-gray-900">VISA</h1>
-          <p className="text-[10px] uppercase tracking-[0.4em] text-[#a88b63] mt-1 font-medium">The India Edit</p>
-        </div>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 -ml-2 touch-manipulation active:scale-95 transition-transform"
+            aria-label="Menu"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
 
-        <div className="flex items-center gap-6 md:gap-8">
-          <div className={`flex items-center overflow-hidden transition-all duration-300 ${isSearchOpen ? 'w-48 border-b border-black' : 'w-5'}`}>
-            <Search 
-              size={20} 
-              className="cursor-pointer hover:text-[#a88b63] transition-colors min-w-[20px]" 
-              onClick={() => setIsSearchOpen(!isSearchOpen)} 
-            />
-            <input
-              ref={searchInputRef}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className={`ml-2 bg-transparent outline-none text-sm w-full ${isSearchOpen ? 'opacity-100' : 'opacity-0'}`}
-            />
-            {isSearchOpen && (
-              <X size={14} className="cursor-pointer" onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} />
-            )}
+          <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.2em] font-medium text-gray-800">
+            <button onClick={() => document.getElementById('collection').scrollIntoView({behavior: 'smooth'})} className="hover:text-[#a88b63] transition-colors">Collections</button>
+            <button onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth'})} className="hover:text-[#a88b63] transition-colors">Journal</button>
           </div>
 
-          <div className="relative cursor-pointer group" onClick={onOpenCart}>
-            <ShoppingBag size={20} className="group-hover:text-[#a88b63] transition-colors" />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#a88b63] text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
-                {cartCount}
-              </span>
-            )}
+          <div onClick={onLogoClick} className={`absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center cursor-pointer touch-manipulation transition-all duration-500 ${scrolled ? 'scale-90' : 'scale-100'}`}>
+            <h1 className="font-serif text-2xl md:text-4xl font-bold tracking-tight text-gray-900">VISA</h1>
+            <p className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] text-[#a88b63] mt-0.5 md:mt-1 font-medium">The India Edit</p>
+          </div>
+
+          <div className="flex items-center gap-4 md:gap-8">
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="p-2 -mr-2 md:mr-0 touch-manipulation active:scale-95 transition-transform"
+              aria-label="Search"
+            >
+              <Search size={20} className="hover:text-[#a88b63] transition-colors" />
+            </button>
+
+            <button
+              onClick={onOpenCart}
+              className="relative p-2 -mr-2 touch-manipulation active:scale-95 transition-transform"
+              aria-label="Cart"
+            >
+              <ShoppingBag size={20} className="hover:text-[#a88b63] transition-colors" />
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-0 bg-[#a88b63] text-white text-[10px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                  {cartCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
-      </div>
-    </nav>
+
+        {isSearchOpen && (
+          <div className="px-4 md:px-12 pb-4 pt-2 bg-white border-t border-gray-100 mt-3 md:mt-4 animate-fade-in">
+            <div className="max-w-[1800px] mx-auto relative">
+              <input
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products..."
+                className="w-full border-b border-gray-300 py-3 px-1 outline-none focus:border-[#a88b63] text-base transition-colors"
+              />
+              <button
+                onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+                className="absolute right-0 top-1/2 -translate-y-1/2 p-2 touch-manipulation"
+              >
+                <X size={20} className="text-gray-400" />
+              </button>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-40 md:hidden animate-fade-in">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
+          <div className="absolute top-0 left-0 bottom-0 w-[80%] max-w-[300px] bg-white shadow-2xl animate-slide-in-left">
+            <div className="p-8 space-y-8">
+              <div>
+                <h2 className="font-serif text-3xl mb-2">VISA</h2>
+                <p className="text-xs text-[#a88b63] uppercase tracking-widest">The India Edit</p>
+              </div>
+              <nav className="space-y-6">
+                <button
+                  onClick={() => { document.getElementById('collection').scrollIntoView({behavior: 'smooth'}); setMobileMenuOpen(false); }}
+                  className="block text-left w-full text-lg font-light hover:text-[#a88b63] transition-colors touch-manipulation py-2"
+                >
+                  Collections
+                </button>
+                <button
+                  onClick={() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth'}); setMobileMenuOpen(false); }}
+                  className="block text-left w-full text-lg font-light hover:text-[#a88b63] transition-colors touch-manipulation py-2"
+                >
+                  Contact
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
 const ProductCard = ({ product, onClick }) => {
   return (
-    <div className="group relative cursor-pointer" onClick={() => onClick(product)}>
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#f0f0f0]">
-        <img 
-          src={product.image} 
+    <div className="group relative cursor-pointer touch-manipulation" onClick={() => onClick(product)}>
+      <div className="relative aspect-[3/4] overflow-hidden bg-[#f0f0f0] rounded-sm">
+        <img
+          src={product.image}
           alt={product.name}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-active:scale-95 md:group-hover:scale-105"
+          loading="lazy"
         />
-        <img 
-          src={product.imageHover} 
+        <img
+          src={product.imageHover}
           alt={product.name}
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 group-hover:opacity-100"
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-0 md:group-hover:opacity-100"
+          loading="lazy"
         />
-        
+
         {product.oldPrice && (
-            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 text-[10px] uppercase tracking-widest font-medium">
+            <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-2.5 py-1.5 text-[9px] md:text-[10px] uppercase tracking-widest font-medium shadow-sm">
                 Privilege Price
             </div>
         )}
 
-        <div className="absolute inset-x-0 bottom-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 flex justify-between items-end bg-gradient-to-t from-black/40 to-transparent">
-          <span className="text-white text-xs uppercase tracking-widest border-b border-white pb-1">View Details</span>
+        <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 md:translate-y-4 md:group-hover:translate-y-0 flex justify-between items-end bg-gradient-to-t from-black/60 to-transparent">
+          <span className="text-white text-[10px] md:text-xs uppercase tracking-widest border-b border-white pb-1">View Details</span>
         </div>
       </div>
 
-      <div className="mt-6 text-center">
-        <p className="text-xs text-[#a88b63] uppercase tracking-widest mb-2">{product.category}</p>
-        <h3 className="font-serif text-2xl text-gray-900 mb-1 group-hover:text-[#a88b63] transition-colors">{product.name}</h3>
-        <p className="font-sans text-sm text-gray-500 font-light">{product.subtitle}</p>
-        <div className="flex items-center justify-center gap-3 mt-2">
+      <div className="mt-4 md:mt-6 text-center px-2">
+        <p className="text-[10px] md:text-xs text-[#a88b63] uppercase tracking-widest mb-1.5 md:mb-2">{product.category}</p>
+        <h3 className="font-serif text-xl md:text-2xl text-gray-900 mb-1 group-hover:text-[#a88b63] transition-colors leading-tight">{product.name}</h3>
+        <p className="font-sans text-xs md:text-sm text-gray-500 font-light">{product.subtitle}</p>
+        <div className="flex items-center justify-center gap-2 md:gap-3 mt-2">
             {product.oldPrice && (
-                <span className="text-gray-400 line-through text-sm">{formatCurrency(product.oldPrice)}</span>
+                <span className="text-gray-400 line-through text-xs md:text-sm">{formatCurrency(product.oldPrice)}</span>
             )}
-            <p className="font-medium text-sm">{formatCurrency(product.price)}</p>
+            <p className="font-medium text-sm md:text-base">{formatCurrency(product.price)}</p>
         </div>
       </div>
     </div>
@@ -332,18 +396,18 @@ const DimensionModal = ({ isOpen, onClose, onConfirm, product }) => {
     if (!isOpen || !product) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] flex items-center justify-center p-4 animate-fade-in">
-            <div className="bg-white p-8 w-full max-w-md shadow-2xl relative animate-slide-up">
-                <button onClick={onClose} className="absolute top-4 right-4"><X size={20}/></button>
-                
-                <div className="text-center mb-8">
-                    <Ruler size={32} className="mx-auto mb-4 text-[#a88b63]" />
-                    <h3 className="font-serif text-2xl mb-2">Bespoke Fit</h3>
-                    <p className="text-sm text-gray-500">Please specify your preferred dimensions (L x W x H) for the {product.name}.</p>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] flex items-end md:items-center justify-center p-0 md:p-4 animate-fade-in">
+            <div className="bg-white p-6 md:p-8 w-full max-w-md shadow-2xl relative animate-slide-up rounded-t-2xl md:rounded-lg max-h-[90vh] overflow-y-auto">
+                <button onClick={onClose} className="absolute top-4 right-4 p-2 touch-manipulation active:scale-95 transition-transform"><X size={20}/></button>
+
+                <div className="text-center mb-6 md:mb-8 pt-2">
+                    <Ruler size={28} md:size={32} className="mx-auto mb-3 md:mb-4 text-[#a88b63]" />
+                    <h3 className="font-serif text-xl md:text-2xl mb-2">Bespoke Fit</h3>
+                    <p className="text-xs md:text-sm text-gray-500 px-2">Please specify your preferred dimensions for the {product.name}.</p>
                 </div>
 
-                <div className="space-y-4 mb-8">
-                    <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-4 mb-6 md:mb-8">
+                    <div className="grid grid-cols-3 gap-3 md:gap-4">
                         <div>
                             <label className="text-[10px] uppercase tracking-widest text-gray-500 block mb-1">Width (cm)</label>
                             <input 
@@ -385,13 +449,13 @@ const DimensionModal = ({ isOpen, onClose, onConfirm, product }) => {
                     </div>
                 </div>
 
-                <button 
+                <button
                     onClick={() => onConfirm(dims)}
-                    className="w-full bg-[#1a1a1a] text-white py-4 text-xs uppercase tracking-[0.2em] hover:bg-[#a88b63] transition-colors"
+                    className="w-full bg-[#1a1a1a] text-white py-4 md:py-4 text-xs uppercase tracking-[0.2em] hover:bg-[#a88b63] transition-colors touch-manipulation active:scale-[0.98]"
                 >
                     Confirm & Add to Cart
                 </button>
-                <button onClick={() => onConfirm({ width: 'Standard', depth: 'Standard', height: 'Standard' })} className="w-full mt-3 text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900">Skip (Use Standard Size)</button>
+                <button onClick={() => onConfirm({ width: 'Standard', depth: 'Standard', height: 'Standard' })} className="w-full mt-3 py-3 text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 touch-manipulation">Skip (Use Standard Size)</button>
             </div>
         </div>
     );
@@ -408,12 +472,12 @@ const CartDrawer = ({ isOpen, onClose, cart, updateQty, removeItem, onCheckout }
       />
       <div className={`fixed top-0 right-0 h-full w-full md:w-[500px] bg-white z-[70] shadow-2xl transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="h-full flex flex-col">
-          <div className="p-8 border-b border-gray-100 flex justify-between items-center">
-            <h2 className="font-serif text-2xl">Your Selection</h2>
-            <button onClick={onClose} className="hover:rotate-90 transition-transform duration-300"><X size={24} /></button>
+          <div className="p-4 md:p-8 border-b border-gray-100 flex justify-between items-center">
+            <h2 className="font-serif text-xl md:text-2xl">Your Selection</h2>
+            <button onClick={onClose} className="p-2 -mr-2 touch-manipulation active:scale-95 hover:rotate-90 transition-transform duration-300"><X size={24} /></button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-8 space-y-8">
+          <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 md:space-y-8">
             {cart.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4 text-gray-400">
                 <ShoppingBag size={48} strokeWidth={1} />
@@ -424,15 +488,15 @@ const CartDrawer = ({ isOpen, onClose, cart, updateQty, removeItem, onCheckout }
               </div>
             ) : (
               cart.map(item => (
-                <div key={item.id} className="flex gap-6 animate-fade-in">
-                  <div className="w-24 h-32 bg-gray-100 flex-shrink-0 overflow-hidden">
-                    <img src={item.image} alt="" className="w-full h-full object-cover" />
+                <div key={item.id} className="flex gap-4 md:gap-6 animate-fade-in">
+                  <div className="w-20 h-28 md:w-24 md:h-32 bg-gray-100 flex-shrink-0 overflow-hidden rounded-sm">
+                    <img src={item.image} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="flex-1 flex flex-col justify-between py-1">
                     <div>
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-serif text-lg">{item.name}</h3>
-                        <button onClick={() => removeItem(item.uniqueId)} className="text-gray-400 hover:text-red-500 transition-colors"><X size={16} /></button>
+                      <div className="flex justify-between items-start gap-2">
+                        <h3 className="font-serif text-base md:text-lg">{item.name}</h3>
+                        <button onClick={() => removeItem(item.uniqueId)} className="p-1.5 -mt-1 -mr-1 touch-manipulation active:scale-95 text-gray-400 hover:text-red-500 transition-colors"><X size={16} /></button>
                       </div>
                       <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">{item.category}</p>
                       {item.dimensions && (
@@ -442,12 +506,12 @@ const CartDrawer = ({ isOpen, onClose, cart, updateQty, removeItem, onCheckout }
                       )}
                     </div>
                     <div className="flex justify-between items-end">
-                      <div className="flex items-center border border-gray-200">
-                        <button onClick={() => updateQty(item.uniqueId, -1)} className="p-2 hover:bg-gray-50"><Minus size={12} /></button>
-                        <span className="w-8 text-center text-xs font-medium">{item.qty}</span>
-                        <button onClick={() => updateQty(item.uniqueId, 1)} className="p-2 hover:bg-gray-50"><Plus size={12} /></button>
+                      <div className="flex items-center border border-gray-200 rounded">
+                        <button onClick={() => updateQty(item.uniqueId, -1)} className="p-2.5 md:p-2 hover:bg-gray-50 touch-manipulation active:bg-gray-100 transition-colors"><Minus size={14} /></button>
+                        <span className="w-10 md:w-8 text-center text-sm md:text-xs font-medium">{item.qty}</span>
+                        <button onClick={() => updateQty(item.uniqueId, 1)} className="p-2.5 md:p-2 hover:bg-gray-50 touch-manipulation active:bg-gray-100 transition-colors"><Plus size={14} /></button>
                       </div>
-                      <p className="font-medium text-sm">{formatCurrency(item.price * item.qty)}</p>
+                      <p className="font-medium text-sm md:text-base">{formatCurrency(item.price * item.qty)}</p>
                     </div>
                   </div>
                 </div>
@@ -456,22 +520,22 @@ const CartDrawer = ({ isOpen, onClose, cart, updateQty, removeItem, onCheckout }
           </div>
 
           {cart.length > 0 && (
-            <div className="p-8 border-t border-gray-100 bg-[#f9f8f6]">
+            <div className="p-4 md:p-8 border-t border-gray-100 bg-[#f9f8f6] safe-bottom">
               <div className="flex justify-between mb-2 text-sm">
                 <span className="text-gray-500">Subtotal</span>
-                <span>{formatCurrency(total)}</span>
+                <span className="font-medium">{formatCurrency(total)}</span>
               </div>
-              <div className="flex justify-between mb-6 text-sm">
+              <div className="flex justify-between mb-4 md:mb-6 text-sm">
                 <span className="text-gray-500">Shipping</span>
                 <span className="text-green-700 text-xs font-bold uppercase">Complimentary</span>
               </div>
-              <div className="flex justify-between mb-8 text-xl font-serif">
+              <div className="flex justify-between mb-6 md:mb-8 text-lg md:text-xl font-serif">
                 <span>Total</span>
                 <span>{formatCurrency(total)}</span>
               </div>
-              <button 
+              <button
                 onClick={onCheckout}
-                className="w-full bg-[#1a1a1a] text-white py-4 text-xs uppercase tracking-[0.2em] hover:bg-[#a88b63] transition-colors duration-300"
+                className="w-full bg-[#1a1a1a] text-white py-4 md:py-4 text-xs uppercase tracking-[0.2em] hover:bg-[#a88b63] transition-colors duration-300 touch-manipulation active:scale-[0.98]"
               >
                 Proceed to Checkout
               </button>
@@ -488,43 +552,43 @@ const ProductDetailView = ({ product, onClose, onInitiateAdd }) => {
 
   return (
     <div className="fixed inset-0 bg-white z-[60] overflow-y-auto animate-fade-in">
-      <button 
+      <button
         onClick={onClose}
-        className="fixed top-6 right-6 z-[70] p-3 rounded-full bg-white/90 backdrop-blur hover:rotate-90 transition-transform duration-300"
+        className="fixed top-4 right-4 md:top-6 md:right-6 z-[70] p-2.5 md:p-3 rounded-full bg-white/95 backdrop-blur shadow-lg hover:rotate-90 transition-transform duration-300 touch-manipulation active:scale-95"
       >
-        <X size={24} />
+        <X size={20} className="md:w-6 md:h-6" />
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
-        <div className="bg-[#f0f0f0] h-[50vh] lg:h-screen relative overflow-hidden">
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+        <div className="bg-[#f0f0f0] h-[45vh] md:h-[50vh] lg:h-screen relative overflow-hidden sticky top-0">
+          <img src={product.image} alt={product.name} className="w-full h-full object-cover" loading="eager" />
         </div>
 
-        <div className="p-8 lg:p-24 flex flex-col justify-center bg-[#f9f8f6]">
+        <div className="p-6 md:p-12 lg:p-24 flex flex-col justify-center bg-[#f9f8f6] min-h-[55vh]">
           <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
-            <span className="text-[#a88b63] text-xs uppercase tracking-[0.2em]">{product.category}</span>
-            <h1 className="font-serif text-5xl lg:text-6xl mt-4 mb-6 text-gray-900">{product.name}</h1>
-            <div className="flex items-center gap-4 mb-8">
-               <div className="flex items-baseline gap-3">
-                    <span className="text-2xl font-light">{formatCurrency(product.price)}</span>
-                    {product.oldPrice && <span className="text-lg text-gray-400 line-through">{formatCurrency(product.oldPrice)}</span>}
+            <span className="text-[#a88b63] text-[10px] md:text-xs uppercase tracking-[0.2em]">{product.category}</span>
+            <h1 className="font-serif text-3xl md:text-5xl lg:text-6xl mt-3 md:mt-4 mb-4 md:mb-6 text-gray-900 leading-tight">{product.name}</h1>
+            <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-6 md:mb-8">
+               <div className="flex items-baseline gap-2 md:gap-3">
+                    <span className="text-xl md:text-2xl font-light">{formatCurrency(product.price)}</span>
+                    {product.oldPrice && <span className="text-base md:text-lg text-gray-400 line-through">{formatCurrency(product.oldPrice)}</span>}
                </div>
-               <div className="h-px w-12 bg-gray-300"></div>
+               <div className="hidden md:block h-px w-12 bg-gray-300"></div>
                <div className="flex text-[#a88b63] text-xs">★★★★★</div>
             </div>
-            
-            <p className="text-gray-600 leading-relaxed font-light mb-8 text-lg">
+
+            <p className="text-gray-600 leading-relaxed font-light mb-6 md:mb-8 text-sm md:text-lg">
               {product.description}
             </p>
 
-            <div className="border-t border-b border-gray-200 py-6 mb-8">
-              <h4 className="text-xs uppercase tracking-widest mb-4 font-medium">Specifications</h4>
-              <p className="text-sm text-gray-500">{product.details || "Premium materials sourced globally."}</p>
+            <div className="border-t border-b border-gray-200 py-4 md:py-6 mb-6 md:mb-8">
+              <h4 className="text-[10px] md:text-xs uppercase tracking-widest mb-3 md:mb-4 font-medium">Specifications</h4>
+              <p className="text-xs md:text-sm text-gray-500 leading-relaxed">{product.details || "Premium materials sourced globally."}</p>
             </div>
 
-            <button 
+            <button
               onClick={() => { onInitiateAdd(product); }}
-              className="w-full bg-[#1a1a1a] text-white py-5 text-xs uppercase tracking-[0.25em] hover:bg-[#a88b63] transition-colors duration-300"
+              className="w-full bg-[#1a1a1a] text-white py-4 md:py-5 text-xs uppercase tracking-[0.25em] hover:bg-[#a88b63] transition-colors duration-300 touch-manipulation active:scale-[0.98] sticky bottom-0 md:static"
             >
               Add to Cart
             </button>
@@ -928,16 +992,31 @@ export default function App() {
         .font-sans { font-family: 'Montserrat', sans-serif; }
         .animate-slide-up { animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-scale-in { animation: scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-fade-in { animation: fadeIn 1s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .animate-slide-in-left { animation: slideInLeft 0.3s ease-out forwards; }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes scaleIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        /* Hide scrollbar for clean look */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { bg: transparent; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        @keyframes slideInLeft { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+
+        /* Mobile-optimized scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #a88b63; }
+
+        /* Safe area for notched devices */
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+        /* Touch optimization */
+        * { -webkit-tap-highlight-color: transparent; }
+        button { -webkit-touch-callout: none; }
+
+        /* Smooth scroll on mobile */
+        html { -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+
+        /* Prevent zoom on input focus (iOS) */
+        input, select, textarea { font-size: 16px; }
       `}</style>
       
       <CustomCursor />
@@ -966,19 +1045,19 @@ export default function App() {
       {/* Admin Login Modal */}
       {showAdminLogin && (
           <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 animate-fade-in">
-              <div className="bg-white p-8 w-full max-w-md shadow-2xl">
+              <div className="bg-white p-6 md:p-8 w-full max-w-md shadow-2xl rounded-lg">
                   <div className="flex justify-between mb-6">
-                    <h3 className="font-serif text-2xl">Staff Access</h3>
-                    <button onClick={() => setShowAdminLogin(false)}><X size={20}/></button>
+                    <h3 className="font-serif text-xl md:text-2xl">Staff Access</h3>
+                    <button onClick={() => setShowAdminLogin(false)} className="p-2 -mr-2 touch-manipulation active:scale-95"><X size={20}/></button>
                   </div>
-                  <input 
-                    type="password" 
-                    placeholder="Enter Passkey (try 'admin123')" 
-                    className="w-full border-b border-gray-300 py-2 outline-none mb-6"
+                  <input
+                    type="password"
+                    placeholder="Enter Passkey (try 'admin123')"
+                    className="w-full border-b border-gray-300 py-3 outline-none mb-6 text-base"
                     value={adminPassword}
                     onChange={e => setAdminPassword(e.target.value)}
                   />
-                  <button onClick={handleAdminLogin} className="w-full bg-[#1a1a1a] text-white py-3 text-xs uppercase tracking-widest hover:bg-[#a88b63] transition-colors">
+                  <button onClick={handleAdminLogin} className="w-full bg-[#1a1a1a] text-white py-4 text-xs uppercase tracking-widest hover:bg-[#a88b63] transition-colors touch-manipulation active:scale-[0.98]">
                       Unlock Dashboard
                   </button>
               </div>
@@ -1017,27 +1096,28 @@ export default function App() {
       {/* Hero Section */}
       <section className="relative h-screen w-full overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=2000&q=80" 
-            className="w-full h-full object-cover object-center filter brightness-[0.85] scale-105 animate-[pulse_10s_ease-in-out_infinite_alternate]" 
+          <img
+            src="https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=2000&q=80"
+            className="w-full h-full object-cover object-center filter brightness-[0.85] scale-105 animate-[pulse_10s_ease-in-out_infinite_alternate]"
             alt="Hero"
+            loading="eager"
           />
           <div className="absolute inset-0 bg-black/10"></div>
         </div>
-        
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
+
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4 md:px-6">
           <RevealOnScroll>
-            <p className="text-xs md:text-sm uppercase tracking-[0.4em] mb-6 font-medium">Est. 1998 • Lucknow</p>
+            <p className="text-[10px] md:text-sm uppercase tracking-[0.3em] md:tracking-[0.4em] mb-4 md:mb-6 font-medium">Est. 1998 • Lucknow</p>
           </RevealOnScroll>
           <RevealOnScroll delay={200}>
-            <h1 className="font-serif text-5xl md:text-8xl lg:text-9xl mb-8 leading-none">
+            <h1 className="font-serif text-4xl md:text-8xl lg:text-9xl mb-6 md:mb-8 leading-none">
               Timeless <br/> <span className="italic text-[#a88b63]">Elegance</span>
             </h1>
           </RevealOnScroll>
           <RevealOnScroll delay={400}>
-            <button 
+            <button
                 onClick={() => document.getElementById('collection').scrollIntoView({behavior: 'smooth'})}
-                className="border border-white/30 hover:bg-white hover:text-black hover:border-white px-12 py-4 text-xs uppercase tracking-[0.25em] transition-all duration-500 backdrop-blur-sm"
+                className="border-2 md:border border-white/40 hover:bg-white hover:text-black hover:border-white px-8 md:px-12 py-3.5 md:py-4 text-[11px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.25em] transition-all duration-500 backdrop-blur-sm touch-manipulation active:scale-95 font-medium"
             >
               Explore Collection
             </button>
@@ -1046,19 +1126,19 @@ export default function App() {
       </section>
 
       {/* Collection Section */}
-      <section className="py-24 px-6 md:px-12 max-w-[1800px] mx-auto" id="collection">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+      <section className="py-16 md:py-24 px-4 md:px-12 max-w-[1800px] mx-auto" id="collection">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6 md:gap-8">
           <RevealOnScroll>
-            <h2 className="font-serif text-5xl text-gray-900">The Edit</h2>
+            <h2 className="font-serif text-3xl md:text-5xl text-gray-900">The Edit</h2>
           </RevealOnScroll>
-          
+
           <RevealOnScroll delay={100}>
-            <div className="flex flex-wrap gap-8 text-xs uppercase tracking-widest">
+            <div className="flex flex-wrap gap-4 md:gap-8 text-[10px] md:text-xs uppercase tracking-widest w-full md:w-auto">
               {CATEGORIES.map(cat => (
-                <button 
+                <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`pb-1 border-b transition-all duration-300 ${activeCategory === cat ? 'border-[#a88b63] text-[#a88b63]' : 'border-transparent text-gray-400 hover:text-gray-900'}`}
+                  className={`pb-1 border-b transition-all duration-300 touch-manipulation ${activeCategory === cat ? 'border-[#a88b63] text-[#a88b63]' : 'border-transparent text-gray-400 active:text-gray-900'}`}
                 >
                   {cat}
                 </button>
@@ -1073,7 +1153,7 @@ export default function App() {
                 <button onClick={() => {setSearchQuery(''); setActiveCategory('All')}} className="mt-4 border-b border-black text-xs uppercase tracking-widest">Clear Filters</button>
             </div>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-12 md:gap-y-16">
             {filteredProducts.map((product, idx) => (
                 <RevealOnScroll key={product.id} delay={idx * 100}>
                 <ProductCard product={product} onClick={setSelectedProduct} />
@@ -1084,51 +1164,51 @@ export default function App() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1a1a1a] text-white pt-24 pb-12">
-        <div className="max-w-[1800px] mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-24 border-b border-gray-800 pb-24">
+      <footer className="bg-[#1a1a1a] text-white pt-16 md:pt-24 pb-8 md:pb-12 safe-bottom">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-12">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-12 md:mb-24 border-b border-gray-800 pb-12 md:pb-24">
             <div className="md:col-span-4">
-              <h2 className="font-serif text-4xl mb-8">VISA</h2>
-              <p className="text-gray-400 font-light leading-relaxed max-w-sm">
-                Elevating spaces with timeless Indian craftsmanship. 
+              <h2 className="font-serif text-3xl md:text-4xl mb-4 md:mb-8">VISA</h2>
+              <p className="text-gray-400 font-light leading-relaxed max-w-sm text-sm md:text-base">
+                Elevating spaces with timeless Indian craftsmanship.
                 Based in Lucknow, shipping elegance worldwide.
               </p>
             </div>
-            
+
             <div className="md:col-span-2">
-              <h4 className="text-xs uppercase tracking-widest text-[#a88b63] mb-8">Shop</h4>
-              <ul className="space-y-4 text-sm text-gray-400 font-light">
-                <li><a href="#" className="hover:text-white transition-colors">New Arrivals</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">The Atelier</a></li>
+              <h4 className="text-[10px] md:text-xs uppercase tracking-widest text-[#a88b63] mb-4 md:mb-8">Shop</h4>
+              <ul className="space-y-3 md:space-y-4 text-sm text-gray-400 font-light">
+                <li><a href="#" className="hover:text-white transition-colors inline-block py-1">New Arrivals</a></li>
+                <li><a href="#" className="hover:text-white transition-colors inline-block py-1">The Atelier</a></li>
               </ul>
             </div>
 
             <div className="md:col-span-3">
-              <h4 className="text-xs uppercase tracking-widest text-[#a88b63] mb-8">Contact</h4>
-              <ul className="space-y-4 text-sm text-gray-400 font-light">
+              <h4 className="text-[10px] md:text-xs uppercase tracking-widest text-[#a88b63] mb-4 md:mb-8">Contact</h4>
+              <ul className="space-y-3 md:space-y-4 text-sm text-gray-400 font-light">
                 <li className="flex items-start gap-3">
                   <MapPin size={16} className="mt-1 shrink-0 text-[#a88b63]" />
-                  <span>Ashiyana, Bijnore Road<br/>Lucknow 226002</span>
+                  <span className="leading-relaxed">Ashiyana, Bijnore Road<br/>Lucknow 226002</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Mail size={16} className="text-[#a88b63]" />
-                  <a href="mailto:sumitkathpalai41@gmail.com" className="hover:text-white transition-colors">sumitkathpalai41@gmail.com</a>
+                <li className="flex items-start gap-3">
+                  <Mail size={16} className="mt-0.5 shrink-0 text-[#a88b63]" />
+                  <a href="mailto:sumitkathpalai41@gmail.com" className="hover:text-white transition-colors break-all">sumitkathpalai41@gmail.com</a>
                 </li>
               </ul>
             </div>
 
             <div className="md:col-span-3">
-              <h4 className="text-xs uppercase tracking-widest text-[#a88b63] mb-8">Newsletter</h4>
+              <h4 className="text-[10px] md:text-xs uppercase tracking-widest text-[#a88b63] mb-4 md:mb-8">Newsletter</h4>
               <div className="flex border-b border-gray-700 pb-2">
                 <input type="email" placeholder="Email Address" className="bg-transparent w-full outline-none text-white placeholder-gray-600 text-sm" />
-                <button className="text-gray-400 hover:text-white uppercase text-xs tracking-widest">Subscribe</button>
+                <button className="text-gray-400 hover:text-white uppercase text-[10px] md:text-xs tracking-widest touch-manipulation whitespace-nowrap">Subscribe</button>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 uppercase tracking-widest">
-            <p>© 2024 VISA Furniture India.</p>
-            <button onClick={() => setShowAdminLogin(true)} className="flex items-center gap-2 hover:text-white transition-colors">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-gray-600 uppercase tracking-widest">
+            <p className="text-center md:text-left">© 2024 VISA Furniture India.</p>
+            <button onClick={() => setShowAdminLogin(true)} className="flex items-center gap-2 hover:text-white transition-colors touch-manipulation py-2">
                 <Lock size={10} /> Staff Access
             </button>
           </div>
