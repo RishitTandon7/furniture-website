@@ -1105,7 +1105,7 @@ export default function App() {
           <div className="absolute inset-0 bg-black/10"></div>
         </div>
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4 md:px-6">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4 md:px-6 -mt-16 md:mt-0">
           <RevealOnScroll>
             <p className="text-[10px] md:text-sm uppercase tracking-[0.3em] md:tracking-[0.4em] mb-4 md:mb-6 font-medium">Est. 1998 • Lucknow</p>
           </RevealOnScroll>
